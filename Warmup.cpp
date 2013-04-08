@@ -3,16 +3,22 @@
  * ----------------
  * Name: Eric Beach
  * Section: [TODO: enter section leader here]
+ * Copyright [2013] <Eric Beach>
  * This program generates a hash code based on user's name.
  * As given, this code has two compiler errors you need to track down 
  * and fix in order to get the program up and running.
  * [Originally written by Julie Zelenski]
+ *
+ * This file lightly linted using
+ * http://google-styleguide.googlecode.com/svn/trunk/cpplint/cpplint.py
  */
 
 #include <iostream>
 #include <string>
 #include "console.h"
 #include "simpio.h"
+#include "SendEmail.h"
+
 using namespace std;
 
 /* Constants */
@@ -31,11 +37,30 @@ int main() {
     string name = getLine("Please enter your name: ");
     int code = hashCode(name);
     cout << "The hash code for your name is " << code << "." << endl;
+    
+    string prompt = "Email this to Keith adn your TA? (Y or N): ";
+    string emailSubmission = getLine(prompt);
+    if (emailSubmission != "y" && emailSubmission != "Y") {
+        return 0;
+    }
+    
+    prompt = getLine("Enter recipient's name: ");
+    string destinationName = prompt;
+
+    prompt = getLine("Enter recipient's email address: ");
+    string destinationEmail = prompt;
+    
+    SendEmail mailer = SendEmail();
+    mailer.setDestinationName(destinationName);
+    mailer.setDestinationEmail(destinationEmail);
+    mailer.setNameToHash(name);
+    mailer.setHashCode(code);
+    mailer.sendMail();
     return 0;
 }
 
 /*
- * Function: hash
+ * Function: hashCode
  * Usage: int code = hashCode(key);
  * --------------------------------
  * This function takes the key and uses it to derive a hash code,

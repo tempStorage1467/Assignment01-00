@@ -7,11 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1A45BAF717111DC200ED912A /* SendEmail.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A45BAF517111DC200ED912A /* SendEmail.cpp */; };
 		2B41FDFB170E948F00F12A5E /* Warmup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2B41FDFA170E948F00F12A5E /* Warmup.cpp */; };
 		E3DDB4120D2F60C500348E1D /* libStanfordCPPLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E3DDB4110D2F60C500348E1D /* libStanfordCPPLib.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1A45BAF517111DC200ED912A /* SendEmail.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SendEmail.cpp; sourceTree = "<group>"; };
+		1A45BAF617111DC200ED912A /* SendEmail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SendEmail.h; sourceTree = "<group>"; };
 		2B41FDFA170E948F00F12A5E /* Warmup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Warmup.cpp; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* Warmup.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Warmup.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -43,6 +46,8 @@
 			isa = PBXGroup;
 			children = (
 				2B41FDFA170E948F00F12A5E /* Warmup.cpp */,
+				1A45BAF517111DC200ED912A /* SendEmail.cpp */,
+				1A45BAF617111DC200ED912A /* SendEmail.h */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
@@ -148,6 +153,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2B41FDFB170E948F00F12A5E /* Warmup.cpp in Sources */,
+				1A45BAF717111DC200ED912A /* SendEmail.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -170,6 +176,7 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/StanfordCPPLib\"";
+				"LIBRARY_SEARCH_PATHS_QUOTED_1[arch=*]" = "\"$(SRCROOT)/StanfordCPPLib\"";
 				PRODUCT_NAME = Warmup;
 				SDKROOT = macosx;
 				SYMROOT = /tmp/Warmup/build;
