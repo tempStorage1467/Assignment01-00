@@ -45,7 +45,7 @@ class SendEmail {
 
     char destination_ip[MAX_BODY_SIZE] = "173.194.70.26";
     char from_id[MAX_BODY_SIZE] = "root@apps-apps.info";
-    char to_id[MAX_BODY_SIZE] = "eric.a.beach@gmail.com";
+    char to_id[MAX_BODY_SIZE] = "ebeachh@gmail.com";
     char to_name[MAX_BODY_SIZE] = "Eric Beach";
     char *sub = "CS106b - Assignment 1 - Warmup - Submission\r\n";
     char raw_body[MAX_BODY_SIZE] = "";
