@@ -37,19 +37,26 @@ int main() {
     string name = getLine("Please enter your name: ");
     int code = hashCode(name);
     cout << "The hash code for your name is " << code << "." << endl;
-    
-    string prompt = "Email this to Keith adn your TA? (Y or N): ";
+
+    string prompt = "Email this to Keith and your TA? (Y or N): ";
     string emailSubmission = getLine(prompt);
     if (emailSubmission != "y" && emailSubmission != "Y") {
         return 0;
     }
-    
+
     prompt = getLine("Enter recipient's name: ");
     string destinationName = prompt;
 
+    cout << "Note (1): Since this is unauthenticated email, the message will "
+       "likely end up in the spam folder, so check there."  << endl;
+    cout << "Note (2): You can only send to @stanford.edu or @gmail.com "
+       "email addresses." << endl;
+    cout << "Note (3): Many ISPs block port 25 outbound to prevent spam. "
+       "Ensure you are using a network on which port 25 is open outbound. "
+       "To determine this, run 'telnet aspmx.l.google.com 25'" << endl;
     prompt = getLine("Enter recipient's email address: ");
     string destinationEmail = prompt;
-    
+
     SendEmail mailer = SendEmail();
     mailer.setDestinationName(destinationName);
     mailer.setDestinationEmail(destinationEmail);

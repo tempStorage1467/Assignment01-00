@@ -15,6 +15,15 @@
  * Credit to: http://stackoverflow.com/questions/58210/c-smtp-example
  * I modified this code, put it into a class, and got it to compile.
  *
+ * I almost got DNS resolution working. If you look at the git commit
+ *   2da8c7a4538b19ad8a5a13ecdc1ec5edb18f2c80, you will see that I was able
+ *   to get a query to execute (confirmed with Wireshark). Further, I somewhat
+ *   got the results to parse. The problem was the code started getting into
+ *   weird C stuff I didn't understand and didn't have time to learn (sadly)
+ *   with a fulltime job. In addition, I would need to re-assemble DNS packets
+ *   as per "4.1.4. Message compression" of RFC 1035. Consequently, I hardcoded
+ *   in @gmail.com and @stanford.edu
+ *
  * Additional insiration/credit for the DNS resolution:
  * http://stackoverflow.com/questions/1093410/pulling-mx-record-from-dns-server
  * http://stackoverflow.com/questions/258284/srv-record-lookup-with-iphone-sdk
@@ -23,115 +32,61 @@
  */
 
 #include "SendEmail.h"
-#include <dns_sd.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+#include <string>
 
 using namespace std;
 
-// constants
-#define MAX_DOMAIN_LABEL 63
-#define MAX_DOMAIN_NAME 255
-#define MAX_CSTRING 2044
-const int T_TXT = 16;
-const int T_A = 1;
-const int T_MX = 15;
-
-// data structure defs
-typedef union { unsigned char b[2]; unsigned short NotAnInteger; } Opaque16;
-
-typedef struct { u_char c[ 64]; } domainlabel;
-typedef struct { u_char c[256]; } domainname;
-
-
-typedef struct
-{
-    uint16_t priority;
-    uint16_t weight;
-    uint16_t port;
-    domainname target;
-} srv_rdata;
-
-//static void print_rdata(int type, int len, const u_char *rdata)
-static void print_rdata(int type, int len, const void *rdata)
-{
-    struct in_addr in;
-    
-    switch (type)
-    {
-        case T_MX:
-        case T_A:
-            memcpy(&in, rdata, sizeof(in));
-            printf("%s\n", inet_ntoa(in));
-            return;
-        default:
-            printf("ERROR: I dont know how to print RData of type %d\n", type);
-            return;
-    }
-}
-
-
-static void query_cb(const DNSServiceRef DNSServiceRef, const DNSServiceFlags flags, const u_int32_t interfaceIndex, const DNSServiceErrorType errorCode, const char *name, const u_int16_t rrtype, const u_int16_t rrclass, const u_int16_t rdlen, const void *rdata, const u_int32_t ttl, void *context)
-{
-    (void)DNSServiceRef;
-    (void)flags;
-    (void)interfaceIndex;
-    (void)rrclass;
-    (void)ttl;
-    (void)context;
-    
-    if (errorCode)
-    {
-        printf("query callback: error==%d\n", errorCode);
-        return;
-    }
-    printf("query callback - name = %s, rdata=\n", name);
-    print_rdata(rrtype, rdlen, rdata);
-}
-
+/*
+ * Simulate a resolution of DNS (MX -> A) to get an IP.
+ * To simplify, only two hosts are permitted (gmail.com or stanford.edu)
+ */
 void SendEmail::resolveMxResords() {
-    DNSServiceRef sdRef;
-    DNSServiceErrorType res;
-    
-    DNSServiceQueryRecord(
-                          &sdRef, 0, 0,
-                          "stanford.edu",
-                          kDNSServiceType_MX,
-                          kDNSServiceClass_IN,
-                          query_cb,
-                          NULL
-                          );
-    
-    DNSServiceProcessResult(sdRef);
-    DNSServiceRefDeallocate(sdRef);
+    if (destinationHostname == "gmail.com") {
+        strncpy(destination_ip, "173.194.70.26", MAX_BODY_SIZE);
+    } else {
+        // use Stanford's MailEXchanger
+        strncpy(destination_ip, "171.67.219.71", MAX_BODY_SIZE);
+    }
 }
 
 /*
  * Send a C-style string to the open socket.
  */
-void SendEmail::send_socket(char *s)
-{
-    write(sock,s,strlen(s));
-    write(1,s,strlen(s));
+void SendEmail::send_socket(char *s) {
+    write(sock, s, strlen(s));
+    write(1, s, strlen(s));
     // printf("Client:%s\n",s);
 }
 
-bool SendEmail::setDestinationEmail(string address)
-{
+/*
+ * Set the destination name (i.e., the address of the individual receiving
+ *   the email).
+ */
+bool SendEmail::setDestinationEmail(string address) {
+    destinationHostname = address.substr(address.find("@") + 1);
     strncpy(to_id, address.c_str(), MAX_BODY_SIZE);
     return true;
 }
 
+/*
+ * Set the destination name (i.e., the name of the individual receiving 
+ *   the email).
+ */
 bool SendEmail::setDestinationName(string name) {
     strncpy(to_name, name.c_str(), MAX_BODY_SIZE);
     return true;
 }
 
+/*
+ * Convert a digit to a string.
+ */
 string SendEmail::digitToString(int n) {
     return string() + char(n % 10 + '0');
 }
 
+/*
+ * Convert an integer to a string.
+ */
 string SendEmail::intToString(int n) {
     if (n == 0) {
         return string("0");
@@ -144,18 +99,27 @@ string SendEmail::intToString(int n) {
     }
 }
 
+/*
+ * Set the hash code to be transmitted in the email.
+ */
 bool SendEmail::setHashCode(int hCode) {
     hashCode = intToString(hCode);
     return true;
 }
 
+/*
+ * Constrict an RFC822 compliant message body for transmit via SMTP.
+ */
 bool SendEmail::setNameToHash(string name) {
     nameToHash = name;
     return true;
 }
 
+/*
+ * Constrict an RFC822 compliant message body for transmit via SMTP.
+ */
 void SendEmail::constructEmailBody() {
-    string body = "From: CS106B #1 (Eric Beach) <root@apps-email.info>\r\n"
+    string body = "From: CS106B #1 (Eric Beach) <root@apps-apps.info>\r\n"
     "To: " + string(to_name) + " <"
       + string(to_id) + ">\r\n"
     "Content-Type: multipart/alternative; "
@@ -187,8 +151,7 @@ void SendEmail::constructEmailBody() {
 /*
  * Read a string from the socket and write it to the terminal output.
  */
-void SendEmail::read_socket()
-{
+void SendEmail::read_socket() {
     numBytesRead = read(sock, buf, BUFSIZ);
     write(1, buf, numBytesRead);
     // printf("Server:%s\n",buf);
@@ -197,72 +160,69 @@ void SendEmail::read_socket()
 /*
  * Send an email.
  */
-int SendEmail::sendMail()
-{
+int SendEmail::sendMail() {
     resolveMxResords();
+
     constructEmailBody();
     cout << "Attempting to send email" << endl;
-    /*=====Create Socket=====*/
+    // Create Socket
     sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (sock == -1)
-    {
+    if (sock == -1) {
         perror("opening stream socket");
         exit(1);
     } else {
         cout << "socket created\n";
     }
- 
+
     cout << "Email Socket Created" << endl;
 
-    
+
     /*=====Verify host=====*/
     server.sin_family = AF_INET;
     hp = gethostbyname(destination_ip);
-    if (hp == (struct hostent *) 0)
-    {
+    if (hp == (struct hostent *) 0) {
         fprintf(stderr, "%s: unknown host\n", destination_ip);
         exit(2);
     }
-    
+
     cout << "Host Verified" << endl;
-    
-    /*=====Connect to port 25 on remote host=====*/
+
+    // Connect to port 25 on remote host
     memcpy((char *) &server.sin_addr, (char *) hp->h_addr, hp->h_length);
-    server.sin_port=htons(25); /* SMTP PORT */
-    if (connect(sock, (struct sockaddr *) &server, sizeof server)==-1)
-    {
+    server.sin_port = htons(25);  // SMTP PORT
+    if (connect(sock, (struct sockaddr *) &server, sizeof server) == -1) {
         perror("connecting stream socket");
         exit(1);
     } else {
         cout << "Connected\n";
     }
-    
+
     cout << "Connected on Port 25" << endl;
-    /*=====Write some data then read some =====*/
-    read_socket(); /* SMTP Server logon string */
-    send_socket(HELO); /* introduce ourselves */
-    read_socket(); /*Read reply */
+    //  Write some data then read some
+    read_socket();  // SMTP Server logon string
+    send_socket(HELO);
+    read_socket();  // Read reply
     send_socket("MAIL FROM: <");
     send_socket(from_id);
     send_socket(">\r\n");
-    read_socket(); /* Sender OK */
-    send_socket("RCPT TO: <"); /*Mail to*/
+    read_socket();  // Sender OK
+    send_socket("RCPT TO: <");  // Mail to
     send_socket(to_id);
     send_socket(">\r\n");
-    read_socket(); // Recipient OK*/
-    send_socket(DATA);// body to follow*/
-    read_socket(); // Recipient OK*/
+    read_socket();  // Recipient OK
+    send_socket(DATA);  // body to follow
+    read_socket();  // Recipient OK
     send_socket("Subject: ");
     send_socket(sub);
     send_socket(raw_body);
     send_socket(".\r\n");
     read_socket();
-    send_socket(QUIT); /* quit */
-    read_socket(); // log off */
-    
+    send_socket(QUIT);
+    read_socket();  // log off
+
     cout << "Data Transmitted" << endl;
-    
-    //=====Close socket and finish=====*/
+
+    // Close socket and finish
     close(sock);
     cout << "Sent Email to " << to_id;
     return 0;

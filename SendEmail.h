@@ -16,23 +16,23 @@
  * I modified this code, put it into a class, and got it to compile.
  */
 
-#ifndef __Warmup__SendEmail__
-#define __Warmup__SendEmail__
+#ifndef SENDEMAIL_H_
+#define SENDEMAIL_H_
 
 // Includes for Emailing
-#include <iostream>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
 #include <stdio.h>
-#include <string>
 #include <math.h>
+#include <iostream>
+#include <string>
 
 using namespace std;
 
 class SendEmail {
-private:
+ private:
     int sock;
     struct sockaddr_in server;
     struct hostent *hp;
@@ -41,26 +41,27 @@ private:
     static const int MAX_BODY_SIZE = 5000;
     string hashCode;
     string nameToHash;
+    string destinationHostname;
 
-    char *destination_ip = "173.194.70.26";
-    char *from_id = "root@apps-email.info";
+    char destination_ip[MAX_BODY_SIZE] = "173.194.70.26";
+    char from_id[MAX_BODY_SIZE] = "root@apps-apps.info";
     char to_id[MAX_BODY_SIZE] = "eric.a.beach@gmail.com";
     char to_name[MAX_BODY_SIZE] = "Eric Beach";
     char *sub = "CS106b - Assignment 1 - Warmup - Submission\r\n";
     char raw_body[MAX_BODY_SIZE] = "";
-    
+
     char *HELO = "HELO apps-apps.info\r\n";
     char *DATA = "DATA\r\n";
     char *QUIT = "QUIT\r\n";
-    
+
     void send_socket(char *s);
     void read_socket();
     void constructEmailBody();
     void resolveMxResords();
     string digitToString(int n);
     string intToString(int n);
-    
-public:
+
+ public:
     bool setDestinationEmail(string address);
     bool setDestinationName(string name);
     bool setHashCode(int hCode);
@@ -68,4 +69,4 @@ public:
     int sendMail();
 };
 
-#endif /* defined(__Warmup__SendEmail__) */
+#endif  // SENDEMAIL_H_
