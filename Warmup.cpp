@@ -2,8 +2,8 @@
  * File: Warmup.cpp
  * ----------------
  * Name: Eric Beach
- * Section: [TODO: enter section leader here]
- * Copyright [2013] <Eric Beach>
+ * Section: SCPD, Aaron Broder <abroder@stanford.edu>
+ * Copyright 2013 Eric Beach <ebeach@google.com>
  * This program generates a hash code based on user's name.
  * As given, this code has two compiler errors you need to track down 
  * and fix in order to get the program up and running.
@@ -38,7 +38,7 @@ int main() {
     int code = hashCode(name);
     cout << "The hash code for your name is " << code << "." << endl;
 
-    string prompt = "Email this to Keith and your TA? (Y or N): ";
+    string prompt = "Email this to another person (Y or N): ";
     string emailSubmission = getLine(prompt);
     if (emailSubmission != "y" && emailSubmission != "Y") {
         return 0;

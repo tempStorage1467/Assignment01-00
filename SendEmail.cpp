@@ -2,8 +2,8 @@
  * File: SendEmail.cpp
  * ----------------
  * Name: Eric Beach
- * Section: [TODO: enter section leader here]
- * Copyright [2013] <Eric Beach>
+ * Section: SCPD, Aaron Broder <abroder@stanford.edu>
+ * Copyright 2013 Eric Beach <ebeach@google.com>
  * This file implements a class used to send an email.
  * [Originally written by Julie Zelenski]
  *
@@ -43,6 +43,9 @@ using namespace std;
 void SendEmail::resolveMxResords() {
     if (destinationHostname == "gmail.com") {
         strncpy(destination_ip, "173.194.70.26", MAX_BODY_SIZE);
+    } else if (destinationHostname == "cs.stanford.edu") {
+        // use Stanford's CS MailExchanger
+        strncpy(destination_ip, "171.64.64.64", MAX_BODY_SIZE);
     } else {
         // use Stanford's MailEXchanger
         strncpy(destination_ip, "171.67.219.71", MAX_BODY_SIZE);
@@ -55,7 +58,6 @@ void SendEmail::resolveMxResords() {
 void SendEmail::send_socket(char *s) {
     write(sock, s, strlen(s));
     write(1, s, strlen(s));
-    // printf("Client:%s\n",s);
 }
 
 /*
@@ -154,7 +156,6 @@ void SendEmail::constructEmailBody() {
 void SendEmail::read_socket() {
     numBytesRead = read(sock, buf, BUFSIZ);
     write(1, buf, numBytesRead);
-    // printf("Server:%s\n",buf);
 }
 
 /*
@@ -165,6 +166,7 @@ int SendEmail::sendMail() {
 
     constructEmailBody();
     cout << "Attempting to send email" << endl;
+
     // Create Socket
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock == -1) {
