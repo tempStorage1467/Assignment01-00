@@ -4,6 +4,7 @@
  * Name: Eric Beach
  * Section: SCPD, Aaron Broder <abroder@stanford.edu>
  * Copyright 2013 Eric Beach <ebeach@google.com>
+ * Assignment 1 - Pt. 0 - Wramup
  * This file implements a class used to send an email.
  * [Originally written by Julie Zelenski]
  *
@@ -38,7 +39,12 @@ using namespace std;
 
 /*
  * Simulate a resolution of DNS (MX -> A) to get an IP.
- * To simplify, only two hosts are permitted (gmail.com or stanford.edu)
+ * To simplify, only three hosts are permitted (e.g. gmail.com or stanford.edu)
+ *
+ * The proper way to do this is with a DNS resolution library.
+ * Likewise, if I didn't want to use a library, I would use a table of
+ *   hostnames to IPs for common hosts (though this obviously introduces the
+ *   risk that authoritative nameserver will change the IP).
  */
 void SendEmail::resolveMxResords() {
     if (destinationHostname == "gmail.com") {

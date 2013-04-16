@@ -4,6 +4,7 @@
  * Name: Eric Beach
  * Section: SCPD, Aaron Broder <abroder@stanford.edu>
  * Copyright 2013 Eric Beach <ebeach@google.com>
+ * Assignment 1 - Pt. 0 - Wramup
  * This file defines a class used to send an email.
  * [Originally written by Julie Zelenski]
  *

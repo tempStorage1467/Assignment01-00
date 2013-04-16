@@ -4,6 +4,7 @@
  * Name: Eric Beach
  * Section: SCPD, Aaron Broder <abroder@stanford.edu>
  * Copyright 2013 Eric Beach <ebeach@google.com>
+ * Assignment 1 - Pt. 0 - Wramup
  * This program generates a hash code based on user's name.
  * As given, this code has two compiler errors you need to track down 
  * and fix in order to get the program up and running.
